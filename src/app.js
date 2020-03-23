@@ -5,7 +5,6 @@ const https = require('https');
 const auth = require('./auth');
 const bodyParser = require('body-parser');
 
-
 function init({ config, userModel }){
   const app = express();
 
