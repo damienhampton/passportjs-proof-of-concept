@@ -4,7 +4,6 @@ const cookieParser = require('cookie-parser')
 const SamlStrategy = require('passport-saml').Strategy;
 const LocalStrategy = require('passport-local').Strategy;
 const OIDCStrategy = require('passport-azure-ad').OIDCStrategy
-// const BearerStrategy = require('passport-azure-ad').BearerStrategy
 const JwtStrategy = require('passport-jwt').Strategy;
 const jwt = require('jsonwebtoken');
 
@@ -32,7 +31,6 @@ function init({ app, config, azureRoute, azureCallbackRoute, samlRoute, samlCall
     return done(null, user);
   }
 
-  // NEW ///////////////////////// 
   function SamlFunc(profile, done) {
     console.log('DATA FROM GOOGLE:', profile);
     const user = userModel.findUserByEmail(profile.nameID);
@@ -48,8 +46,6 @@ function init({ app, config, azureRoute, azureCallbackRoute, samlRoute, samlCall
     // if (!profile.oid) {
     //   return done(new Error("No oid found"), null);
     // }
-    // asynchronous verification, for effect...
-    // process.nextTick(function () {
     // findByOid(profile.oid, function(err, user) {
     //   if (err) {
     //     return done(err);
@@ -61,7 +57,6 @@ function init({ app, config, azureRoute, azureCallbackRoute, samlRoute, samlCall
     //   }
     //   return done(null, user);
     // });
-    // });
     const user = userModel.findUserByEmail(profile._json.email);
     if(!user){
       return done(null, false);
@@ -69,21 +64,6 @@ function init({ app, config, azureRoute, azureCallbackRoute, samlRoute, samlCall
     console.log('MATCHED LOCAL ACCOUNT:', user);
     return done(null, user);
   }
-
-  // function AzureBearerFunc(token, done) {
-  //   console.log('verifying the user');
-  //   console.log(token, 'was the token retreived');
-  //   const user = userModel.findUserByEmail(token);
-  //   if(!user){
-  //     return done(null, false);
-  //   }
-  //   console.log('MATCHED LOCAL ACCOUNT:', user);
-  //   return done(null, user);
-  // }
-
-
-  // NEW ///////////////////////// 
-
 
   const checkPermissions = requiredPermissions => (req, _, next) => {
     const permissions = Array.isArray(requiredPermissions) ? requiredPermissions : [ requiredPermissions ];
@@ -124,7 +104,6 @@ function init({ app, config, azureRoute, azureCallbackRoute, samlRoute, samlCall
   opts.jwtFromRequest = cookieExtractor;
   opts.secretOrKey = config.JWT_SIGNATURE;
 
-  // NEW /////////////////////////
   const samlOpts = {
     callbackUrl: 'https://localhost:3000'+samlCallbackRoute,
     entryPoint: config.GOOGLE_SSO_URL,
@@ -138,44 +117,18 @@ function init({ app, config, azureRoute, azureCallbackRoute, samlRoute, samlCall
     responseType: 'code', //required
     responseMode: 'form_post', //required
     redirectUrl: 'https://localhost:3000'+azureCallbackRoute, //required
-    // allowHttpForRedirectUrl: config.creds.allowHttpForRedirectUrl, //optional
     clientSecret: config.AZURE_CLIENT_SECRET,
-    // validateIssuer: config.creds.validateIssuer,
-    // isB2C: config.creds.isB2C,
     issuer: 'PassportTest',
     passReqToCallback: false,
-    // scope: config.creds.scope,
-    // loggingLevel: config.creds.loggingLevel,
-    // loggingNoPII: config.creds.loggingNoPII,
     // nonceLifetime: config.creds.nonceLifetime,
     // nonceMaxAmount: config.creds.nonceMaxAmount,
     useCookieInsteadOfSession: true,
     cookieSameSite: true,
     cookieEncryptionKeys: [{key: config.AZURE_COOKIE_KEY, iv: config.AZURE_COOKIE_IV }],
-    // clockSkew: config.creds.clockSkew,
   }
-
-  // const azureBearerOpts = {
-  //   identityMetadata: config.AZURE_IDENTITY_METADATA, //required
-  //   clientID: config.AZURE_CLIENT_ID, //required
-  //   // validateIssuer: config.creds.validateIssuer,
-  //   issuer: 'PasspoortTest',
-  //   // passReqToCallback: false,
-  //   // isB2C: config.creds.isB2C,
-  //   // policyName: config.creds.policyName,
-  //   // allowMultiAudiencesInToken: config.creds.allowMultiAudiencesInToken,
-  //   // audience: config.creds.audience,
-  //   // loggingLevel: config.creds.loggingLevel,
-  //   // loggingNoPII: config.creds.loggingNoPII,
-  //   // clockSkew: config.creds.clockSkew,
-  //   // scope: config.creds.scope
-  // };
 
   passport.use(new SamlStrategy(samlOpts, SamlFunc));
   passport.use(new OIDCStrategy(azureOpts, AzureFunc));
-  // passport.use(new BearerStrategy(azureBearerOpts, AzureBearerFunc));
-  // NEW /////////////////////////
-
   passport.use(new JwtStrategy(opts, AuthoriseRequest));
   passport.use(new LocalStrategy(AuthenticateUser));
   passport.serializeUser((user, done) => done(null, user));
@@ -184,7 +137,6 @@ function init({ app, config, azureRoute, azureCallbackRoute, samlRoute, samlCall
   app.use(cookieParser());
   app.use(passport.initialize());
 
-  // NEW /////////////////////////
   app.get(samlRoute,
     passport.authenticate('saml', { failureRedirect: '/', failureFlash: true }),
     function(req, res) {
@@ -200,7 +152,6 @@ function init({ app, config, azureRoute, azureCallbackRoute, samlRoute, samlCall
       res.redirect(postLoginRedirect);
     }
   );
-  // NEW ///////////////////////// 
 
   app.get(azureRoute,
     passport.authenticate('azuread-openidconnect', { failureRedirect: '/boom1' }),
@@ -212,10 +163,8 @@ function init({ app, config, azureRoute, azureCallbackRoute, samlRoute, samlCall
   app.post(azureCallbackRoute,
     passport.authenticate('azuread-openidconnect', { failureRedirect: '/boom2' }),
     function(req, res) {
-      // console.log('azureCallbackRoute', req);
       const jwt = createJWT(req.user.username);
       res.cookie('token', jwt, cookieOptions(isSecure(config)));
-      // res.redirect(postLoginRedirect);
       res.redirect(postLoginRedirect);
     }
   );
