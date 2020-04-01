@@ -116,3 +116,9 @@ In the Service Provide details, provide your callback URL (in this case https://
 From previous screen, click certifcate. Add the SSO URL and Entity ID to the .env file and download the certificate and add to the certs folder.
 
 ![G-Suite SSO / Entity](./docs/images/gsuite-sso-entity-certificate.png)
+
+### Other providers
+
+There is also code provided for using [Google's OAuth 2](https://developers.google.com/identity/protocols/oauth2) based IdP and also Jumpcloud.
+
+[Jumpcloud](https://jumpcloud.com/) follows the same SAML set-up as Google, but Jumpcloud makes it easier to propogate group information in the auth token.

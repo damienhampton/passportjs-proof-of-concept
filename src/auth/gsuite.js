@@ -1,10 +1,16 @@
 'use strict'
 const SamlStrategy = require('passport-saml').Strategy;
 
-function init({ passport, postLogin, app, config, samlRoute, samlCallbackRoute, postLoginRedirect, userModel }){
+const samlRoute = '/saml';
+const samlCallbackRoute = '/saml-callback';
+
+function init({ passport, postLogin, app, config, postLoginRedirect, userModel }){
 
   function SamlFunc(profile, done) {
     console.log('DATA FROM GOOGLE:', profile);
+    // console.log(profile.getAssertionXml())
+    console.log(JSON.stringify(profile.getAssertion(), null, 2))
+    // console.log(profile.getSamlResponseXml())
     const user = userModel.findUserByEmail(profile.nameID);
     if(!user){
       return done(null, false);
@@ -20,17 +26,17 @@ function init({ passport, postLogin, app, config, samlRoute, samlCallbackRoute, 
     issuer: 'PassportTest'
   }
 
-  passport.use(new SamlStrategy(samlOpts, SamlFunc));
+  passport.use('gsuite-saml', new SamlStrategy(samlOpts, SamlFunc));
 
   app.get(samlRoute,
-    passport.authenticate('saml', { failureRedirect: '/', failureFlash: true }),
+    passport.authenticate('gsuite-saml', { failureRedirect: '/', failureFlash: true }),
     function(req, res) {
       res.redirect(postLoginRedirect)
     }
   );
 
   app.post(samlCallbackRoute,
-    passport.authenticate('saml', { failureRedirect: '/', failureFlash: true }),
+    passport.authenticate('gsuite-saml', { failureRedirect: '/', failureFlash: true }),
     postLogin(postLoginRedirect)
   );
 }

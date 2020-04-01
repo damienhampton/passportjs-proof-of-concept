@@ -1,7 +1,10 @@
 'use strict'
 const LocalStrategy = require('passport-local').Strategy;
 
-function init({ passport, postLogin, app, config, loginRoute, logoutRoute, postLoginRedirect, postLogoutRedirect, userModel }){
+const loginRoute = '/login';
+const logoutRoute = '/logout';
+
+function init({ passport, postLogin, app, config, postLoginRedirect, postLogoutRedirect, userModel }){
 
   function AuthenticateUser(username, password, done) {
     const user = userModel.findUser(username);

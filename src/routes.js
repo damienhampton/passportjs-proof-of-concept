@@ -1,6 +1,7 @@
 'use strict'
 const express = require('express')
 const permissions = require('./permissions');
+const fs = require('fs').promises;
 
 function init({ authoriser, config: { G_SUITE_DOMAIN } }){
   const router = express.Router();
@@ -20,29 +21,28 @@ function init({ authoriser, config: { G_SUITE_DOMAIN } }){
       <button id="loginButton">Login</button>
     </form>
 
-    <h2>With G-Suite (${G_SUITE_DOMAIN} only)</h2>
+    <h2>With G-Suite SAML (${G_SUITE_DOMAIN} only)</h2>
     <p><a href="/saml">Authenticate with Google</a>
+
+    <h2>With Jumpcloud SAML</h2>
+    <p><a href="/jumpcloud">Authenticate with Jumpcloud</a>
+
+    <h2>With G-Suite OAuth(${G_SUITE_DOMAIN} only)</h2>
+    <p><a href="/gsuite-oauth">Authenticate with Google</a>
 
 
     <h2>With Azure AD (Specific single tenant only)</h2>
     <p><a href="/azure">Authenticate with Azure AD</a>
 
-
-    <script>
-    const usernameInput = document.getElementById('username');
-    const passwordInput = document.getElementById('password');
-    const loginButton = document.getElementById('loginButton');
-
-    loginButton.addEventListener('click', (e) => {
-      const username = usernameInput.value;
-      const password = passwordInput.value;
-      e.preventDefault();
-      console.log(e, username, password);
-      window.href = '/login?username='+username+'&password='+password;
-    })
-
-    </script>`);
+    <script src="client-form.js"></script>`);
   });
+
+  router.get('/client-form.js', async (_, res) => {
+    const js = await fs.readFile(`${__dirname}/client-form.js`, { encoding: 'utf8' });
+    res.setHeader('Content-Type','application/javascript');
+    res.send(js);
+  });
+
 
   router.get('/cats', authoriser(permissions.ALLOW_ALL_CATS), (_, res) => {
     res.send(`<h1>cats</h1>`);

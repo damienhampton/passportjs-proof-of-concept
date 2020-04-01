@@ -1,7 +1,10 @@
 'use strict'
 const OIDCStrategy = require('passport-azure-ad').OIDCStrategy;
 
-function init({ passport, postLogin, app, config, azureRoute, azureCallbackRoute, postLoginRedirect, userModel }){
+const azureRoute = '/azure';
+const azureCallbackRoute = '/azure-callback';
+
+function init({ passport, postLogin, app, config, postLoginRedirect, userModel }){
 
   function AzureFunc(iss, sub, profile, accessToken, refreshToken, done) {
     console.log('iss', iss, 'sub', sub, 'profile', profile, 'accessToken', accessToken, 'refreshToken', refreshToken)

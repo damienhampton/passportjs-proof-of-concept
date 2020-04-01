@@ -14,14 +14,6 @@ function init({ config, userModel }){
   const params = {
     app,
     config,
-    samlRoute: '/saml',
-    samlCallbackRoute: '/saml-callback',
-    azureRoute: '/azure',
-    azureCallbackRoute: '/azure-callback',
-    loginRoute: '/login',
-    logoutRoute: '/logout',
-    refreshRoute: '/refresh',
-    expiryCheckRoute: '/expiry-check',
     postLoginRedirect: '/cats',
     postLogoutRedirect: '/',
     userModel

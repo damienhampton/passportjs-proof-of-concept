@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "nodemon --inspect server"
   },
   "keywords": [],
   "author": "Damien Hampton <damien@26brains.com> (https://twitter.com/damien_hampton)",
@@ -19,10 +19,12 @@
     "cookie-session": "^1.4.0",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
+    "googleapis": "^48",
     "jsonwebtoken": "^8.5.1",
     "passport": "^0.4.1",
     "passport-azure-ad": "^4.2.1",
     "passport-cookie": "^1.0.6",
+    "passport-google-oauth20": "^2.0.0",
     "passport-jwt": "^4.0.0",
     "passport-local": "^1.0.0",
     "passport-saml": "^1.3.3"
