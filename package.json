@@ -20,7 +20,7 @@
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
     "googleapis": "^48",
-    "jsonwebtoken": "^8.5.1",
+    "jsonwebtoken": "^9.0.0",
     "passport": "^0.4.1",
     "passport-azure-ad": "^4.2.1",
     "passport-cookie": "^1.0.6",
